@@ -5,6 +5,7 @@ Revises:
 Create Date: 2026-10-21 00:00:00.000000
 
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -28,9 +29,18 @@ def upgrade() -> None:
         sa.Column("role", sa.String(20), nullable=False, server_default="user"),
         sa.Column("is_active", sa.Boolean(), nullable=False, server_default="true"),
         sa.Column("is_online", sa.Boolean(), nullable=False, server_default="false"),
-        sa.Column("last_seen_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "last_seen_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
     )
     op.create_index("ix_users_id", "users", ["id"])
     op.create_index("ix_users_username", "users", ["username"], unique=True)
@@ -43,9 +53,18 @@ def upgrade() -> None:
         sa.Column("type", sa.String(20), nullable=False, server_default="group"),
         sa.Column("name", sa.String(100), nullable=True),
         sa.Column("description", sa.String(500), nullable=True),
-        sa.Column("created_by_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="SET NULL"), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "created_by_id",
+            sa.Integer(),
+            sa.ForeignKey("users.id", ondelete="SET NULL"),
+            nullable=True,
+        ),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
     )
     op.create_index("ix_chats_id", "chats", ["id"])
 
@@ -53,10 +72,16 @@ def upgrade() -> None:
     op.create_table(
         "chat_participants",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("chat_id", sa.Integer(), sa.ForeignKey("chats.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "chat_id", sa.Integer(), sa.ForeignKey("chats.id", ondelete="CASCADE"), nullable=False
+        ),
+        sa.Column(
+            "user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ),
         sa.Column("role", sa.String(20), nullable=False, server_default="member"),
-        sa.Column("joined_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "joined_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
         sa.Column("is_muted", sa.Boolean(), nullable=False, server_default="false"),
         sa.Column("muted_until", sa.DateTime(timezone=True), nullable=True),
         sa.Column("is_banned", sa.Boolean(), nullable=False, server_default="false"),
@@ -71,13 +96,22 @@ def upgrade() -> None:
     op.create_table(
         "messages",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("chat_id", sa.Integer(), sa.ForeignKey("chats.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("sender_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="SET NULL"), nullable=True),
+        sa.Column(
+            "chat_id", sa.Integer(), sa.ForeignKey("chats.id", ondelete="CASCADE"), nullable=False
+        ),
+        sa.Column(
+            "sender_id",
+            sa.Integer(),
+            sa.ForeignKey("users.id", ondelete="SET NULL"),
+            nullable=True,
+        ),
         sa.Column("content", sa.Text(), nullable=False),
         sa.Column("is_edited", sa.Boolean(), nullable=False, server_default="false"),
         sa.Column("is_deleted", sa.Boolean(), nullable=False, server_default="false"),
         sa.Column("edited_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
         sa.Column("attachments", sa.JSON(), nullable=False, server_default="[]"),
     )
     op.create_index("ix_messages_id", "messages", ["id"])
@@ -89,9 +123,18 @@ def upgrade() -> None:
     op.create_table(
         "message_receipts",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("message_id", sa.Integer(), sa.ForeignKey("messages.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("read_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "message_id",
+            sa.Integer(),
+            sa.ForeignKey("messages.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
+        sa.Column(
+            "user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ),
+        sa.Column(
+            "read_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
         sa.UniqueConstraint("message_id", "user_id", name="uq_message_receipt"),
     )
     op.create_index("ix_message_receipts_id", "message_receipts", ["id"])

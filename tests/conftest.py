@@ -20,6 +20,9 @@ from chat_api.models.user import User
 from chat_api.security.hashing import hash_password
 from chat_api.security.jwt import create_access_token
 
+# Precomputed bcrypt hash for test fixtures to avoid repeated key derivation overhead
+TEST_PASSWORD_HASH: str = hash_password("Password123!")
+
 
 @pytest.fixture(scope="session")
 def test_settings() -> Settings:
@@ -142,7 +145,7 @@ async def test_user(db_session: AsyncSession) -> User:
     user = User(
         username="alice",
         email="alice@example.com",
-        hashed_password=hash_password("Password123!"),
+        hashed_password=TEST_PASSWORD_HASH,
         role="user",
         is_active=True,
         is_online=True,
@@ -159,7 +162,7 @@ async def test_user_2(db_session: AsyncSession) -> User:
     user = User(
         username="bob",
         email="bob@example.com",
-        hashed_password=hash_password("Password123!"),
+        hashed_password=TEST_PASSWORD_HASH,
         role="user",
         is_active=True,
         is_online=False,
@@ -176,7 +179,7 @@ async def test_moderator(db_session: AsyncSession) -> User:
     user = User(
         username="mod_user",
         email="mod@example.com",
-        hashed_password=hash_password("Password123!"),
+        hashed_password=TEST_PASSWORD_HASH,
         role="moderator",
         is_active=True,
         is_online=True,
@@ -193,7 +196,7 @@ async def test_admin(db_session: AsyncSession) -> User:
     user = User(
         username="admin_user",
         email="admin@example.com",
-        hashed_password=hash_password("Password123!"),
+        hashed_password=TEST_PASSWORD_HASH,
         role="admin",
         is_active=True,
         is_online=True,
